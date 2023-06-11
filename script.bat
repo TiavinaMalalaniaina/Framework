@@ -25,8 +25,8 @@ rmdir /S /Q .\temp\src
 
 
 :: Copie des Autre fichiers
-copy .\Test-Framework\web\*.jsp .\temp\
-copy .\Test-Framework\web\WEB-INF\web.xml .\temp\WEB-INF\
+copy .\TestFramework\web\*.jsp .\temp\
+copy .\TestFramework\web\WEB-INF\web.xml .\temp\WEB-INF\
 
 
 :: Déploiement vers tomcat

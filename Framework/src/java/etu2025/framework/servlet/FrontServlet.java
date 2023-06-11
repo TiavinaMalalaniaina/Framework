@@ -5,8 +5,10 @@
 package etu2025.framework.servlet;
 
 import etu2025.framework.Mapping;
+import etu2025.framework.ModelView;
 import etu2025.framework.annotation.url;
 import etu2025.framework.util.Utils;
+import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletConfig;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -18,6 +20,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -55,10 +58,26 @@ public class FrontServlet extends HttpServlet {
             out.println("<h1>URL at " + getURL(request) + "</h1>");
             String url = getURL(request);
             Object model_view = executeController(url);
-            out.println(model_view);
+            dispatch(request, response, model_view);
         } catch (Exception ex) {
             Logger.getLogger(FrontServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    
+    private void dispatch(HttpServletRequest request, HttpServletResponse response, Object model_view) throws Exception {
+        if (model_view instanceof ModelView modelView) {
+            try {
+                dispatch(request, response, modelView);
+            } catch (ServletException | IOException e) {
+                throw e;
+            }
+        }
+        throw new Exception("The controller's method must return a ModelView");
+    }
+    
+    private void dispatch(HttpServletRequest request, HttpServletResponse response, ModelView model_view) throws ServletException, IOException {
+        RequestDispatcher dispatcher = request.getRequestDispatcher(model_view.getView());
+        dispatcher.forward(request, response);
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

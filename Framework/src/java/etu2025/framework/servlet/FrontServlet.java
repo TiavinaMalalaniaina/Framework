@@ -17,6 +17,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -138,14 +139,21 @@ public class FrontServlet extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
+    
     private Object executeController(HttpServletRequest request, String url) throws Exception {
         Object model_view = null;
+        Map<String, String[]> parameters = request.getParameterMap();
         Class<?> controller_class = findController(url);
         Method controller_method = findMethodController(controller_class, url);
-        Object[] controller_parameter = new Object[0];
+        Parameter[] controller_method_parameters = controller_method.getParameters();
+        Object[] controller_parameters = new Object[controller_method_parameters.length];
+        for (int i=0; i<controller_method_parameters.length; i++) {
+            Object controller_parameter = Utils.cast(parameters.get(controller_method_parameters[i].getName()), controller_method_parameters[i].getType());
+            controller_parameters[i] = controller_parameter;
+        }
         Object controller = controller_class.newInstance();
         set(request,controller );
-        model_view = controller_method.invoke(controller, controller_parameter);
+        model_view = controller_method.invoke(controller, controller_parameters);
         return model_view;
     }
     

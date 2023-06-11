@@ -33,6 +33,17 @@ public class Emp {
         return mv;
     }
     
+    @url("/parent.action")
+    public ModelView parent(String dadname, String momname) {
+        ModelView mv = new ModelView("list.jsp");
+        mv.addItem("first_name", dadname);
+        mv.addItem("last_name", momname);
+        mv.addItem("loisir", getLoisir());
+        return mv;
+    }
+    
+    
+    
     @url("/input.action")
     public ModelView input() {
         ModelView mv = new ModelView("input.jsp");

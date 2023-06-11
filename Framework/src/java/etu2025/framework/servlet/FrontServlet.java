@@ -5,13 +5,21 @@
 package etu2025.framework.servlet;
 
 import etu2025.framework.Mapping;
+import etu2025.framework.annotation.url;
+import etu2025.framework.util.Utils;
+import jakarta.servlet.ServletConfig;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -19,6 +27,17 @@ import java.util.HashMap;
  */
 public class FrontServlet extends HttpServlet {
     private HashMap<String, Mapping> MappingUrls;
+    private ArrayList<Class<?>> list_class;
+
+    @Override
+    public void init(ServletConfig config) throws ServletException {
+        super.init(config); 
+        String package_model = config.getInitParameter("model-package");
+        setListClass(new ArrayList<>());
+        setMappingUrls(package_model);
+    }
+    
+     
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -34,6 +53,11 @@ public class FrontServlet extends HttpServlet {
         try ( PrintWriter out = response.getWriter()) {
             out.println("<h1>Servlet Frontservlet at " + request.getContextPath() + "</h1>");
             out.println("<h1>URL at " + getURL(request) + "</h1>");
+            String url = getURL(request);
+            Object model_view = executeController(url);
+            out.println(model_view);
+        } catch (Exception ex) {
+            Logger.getLogger(FrontServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -75,7 +99,38 @@ public class FrontServlet extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
-
+    private Object executeController(String url) throws Exception {
+        Object model_view = null;
+        Class<?> controller = findController(url);
+        System.out.println(controller.getName());
+        Method controller_method = findMethodController(controller, url);
+        Object[] controller_parameter = new Object[0];
+        model_view = controller_method.invoke(controller.newInstance(), controller_parameter);
+        return model_view;
+    }
+    
+    private Method findMethodController(Class<?> c, String url) throws Exception {
+        for (Method m : c.getDeclaredMethods()) {
+            if (m.getName().equals(getMappingUrls().get(url).getMethod())){
+                return m;
+            }
+        }
+        throw new Exception("Method not found");
+    }
+        
+    private Class findController(String url) throws Exception {
+        List<Class<?>> lc = getListClass();
+        for (Class<?> c : lc) {
+            if (c.getSimpleName().equals(getMappingUrls().get(url).getClassName())) {
+                for (Method m : c.getDeclaredMethods()) {
+                    if (m.getName().equals(getMappingUrls().get(url).getMethod())){
+                        return c;
+                    }
+                }
+            }
+        }
+        throw new Exception("Controller not found");
+    }
     
     private String getURL(HttpServletRequest request) {
         String contextPath = request.getContextPath();
@@ -90,6 +145,30 @@ public class FrontServlet extends HttpServlet {
     public void setMappingUrls(HashMap<String, Mapping> MappingUrls) {
         this.MappingUrls = MappingUrls;
     }
+    
+    public void setMappingUrls(String path) {
+        try {
+            List<Class> lc = Utils.getClassFrom(path);
+            setMappingUrls(new HashMap<>());
+            for (Class c : lc) {
+                for (Method m : c.getDeclaredMethods()) {
+                    url u = m.getAnnotation(url.class);
+                    if (u  != null) {
+                       getMappingUrls().put(u.value() , new Mapping(c.getSimpleName(), m.getName()));
+                    }
+                }
+                getListClass().add(c);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
 
+    public ArrayList<Class<?>> getListClass() {
+        return this.list_class;
+    }
+    public void setListClass(ArrayList<Class<?>> list_class) {
+        this.list_class = list_class;
+    }
     
 }

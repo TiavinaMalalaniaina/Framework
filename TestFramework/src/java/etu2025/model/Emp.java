@@ -4,6 +4,7 @@
  */
 package etu2025.model;
 
+import etu2025.framework.ModelView;
 import etu2025.framework.annotation.url;
 
 /**
@@ -15,9 +16,9 @@ public class Emp {
     String last_name;
     
     @url("/find-all.action")
-    public String findAll() {
-        System.out.println("Tiavina Malalaniaina");
-        return "Tiavina Malalaniaina";
+    public ModelView findAll() {
+        ModelView mv = new ModelView("list.jsp");
+        return mv;
     }
 
     public String getFirst_name() {

@@ -13,6 +13,10 @@ import java.util.HashMap;
 public class ModelView {
     private String view;
     private HashMap<String, Object> data = new HashMap<>();
+
+    public void addItem(String key, Object value) {
+        getData().put(key, value);
+    }
     
     public ModelView(String view) {
         setView(view);

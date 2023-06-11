@@ -68,6 +68,7 @@ public class FrontServlet extends HttpServlet {
         if (model_view instanceof ModelView modelView) {
             try {
                 dispatch(request, response, modelView);
+                return;
             } catch (ServletException | IOException e) {
                 throw e;
             }
@@ -77,6 +78,11 @@ public class FrontServlet extends HttpServlet {
     
     private void dispatch(HttpServletRequest request, HttpServletResponse response, ModelView model_view) throws ServletException, IOException {
         RequestDispatcher dispatcher = request.getRequestDispatcher(model_view.getView());
+        for (Map.Entry<String, Object> entry : model_view.getData().entrySet()) {
+            String key = String.valueOf(entry.getKey());
+            Object val = entry.getValue();
+            request.setAttribute(key, val);
+        }
         dispatcher.forward(request, response);
     }
 

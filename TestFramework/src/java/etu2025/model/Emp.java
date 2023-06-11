@@ -18,6 +18,8 @@ public class Emp {
     @url("/find-all.action")
     public ModelView findAll() {
         ModelView mv = new ModelView("list.jsp");
+        mv.addItem("first_name", "John");
+        mv.addItem("last_name", "Doe");
         return mv;
     }
 

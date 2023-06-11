@@ -4,18 +4,33 @@
  */
 package etu2025.framework;
 
+import java.util.HashMap;
+
 /**
  *
  * @author tiavi
  */
 public class ModelView {
     private String view;
+    private HashMap<String, Object> data = new HashMap<>();
 
+    public void addItem(String key, Object value) {
+        getData().put(key, value);
+    }
+    
     public ModelView(String view) {
         setView(view);
     }
     public ModelView() {
         
+    }
+
+    public HashMap<String, Object> getData() {
+        return data;
+    }
+
+    public void setData(HashMap<String, Object> data) {
+        this.data = data;
     }
     
     public String getView() {

@@ -8,7 +8,6 @@
 <%
     String first_name = String.valueOf(request.getAttribute("first_name"));    
     String last_name = String.valueOf(request.getAttribute("last_name"));
-    String[] loisir = (String[]) request.getAttribute("loisir");
 %>
 <!DOCTYPE html>
 <html>
@@ -18,15 +17,14 @@
     </head>
     <body>
         <h1>Hello World!</h1>
-        <ul>
-            <li><%= first_name %></li>
-            <li><%= last_name %></li>
-        </ul>
-        <h2>Loisir</h2>
-        <ul>
-            <% for (String i : loisir) { %>
-            <li><%= i %></li>
-            <% } %>
-        </ul>
+        <form action="save.action" method="get">
+            <input type="text" name="firstname" value="Tiavina">
+            <input type="text" name="lastname" value="Malalaniaina">
+            <input type="checkbox" name="loisir" value="foot">
+            <input type="checkbox" name="loisir" value="basket">
+            <input type="checkbox" name="loisir" value="volley">
+            <input type="submit" value="send">
+        </form>
+
     </body>
 </html>

@@ -57,11 +57,25 @@ public class FrontServlet extends HttpServlet {
             out.println("<h1>Servlet Frontservlet at " + request.getContextPath() + "</h1>");
             out.println("<h1>URL at " + getURL(request) + "</h1>");
             String url = getURL(request);
-            Object model_view = executeController(url);
+            Object model_view = executeController(request, url);
             dispatch(request, response, model_view);
         } catch (Exception ex) {
             Logger.getLogger(FrontServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    
+    private void set(HttpServletRequest request, Object o) throws NoSuchMethodException, Exception {
+        HashMap<String, Method> setters = Utils.getAllSetters(o.getClass());
+        Map<String, String[]> parameters = request.getParameterMap();
+        for (Map.Entry<String, Method> entry : setters.entrySet()) {
+            String key = String.valueOf(entry.getKey());
+            Method setter = (Method)entry.getValue();
+            String[] parameter = parameters.get(key);
+            Class<?>[] setter_parameter = setter.getParameterTypes();
+            Object setter_parameter_object = Utils.cast(parameter, setter_parameter[0]);
+            setter.invoke(o, setter_parameter_object);
+        }
+        
     }
     
     private void dispatch(HttpServletRequest request, HttpServletResponse response, Object model_view) throws Exception {
@@ -124,13 +138,14 @@ public class FrontServlet extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
-    private Object executeController(String url) throws Exception {
+    private Object executeController(HttpServletRequest request, String url) throws Exception {
         Object model_view = null;
-        Class<?> controller = findController(url);
-        System.out.println(controller.getName());
-        Method controller_method = findMethodController(controller, url);
+        Class<?> controller_class = findController(url);
+        Method controller_method = findMethodController(controller_class, url);
         Object[] controller_parameter = new Object[0];
-        model_view = controller_method.invoke(controller.newInstance(), controller_parameter);
+        Object controller = controller_class.newInstance();
+        set(request,controller );
+        model_view = controller_method.invoke(controller, controller_parameter);
         return model_view;
     }
     
@@ -143,6 +158,12 @@ public class FrontServlet extends HttpServlet {
         throw new Exception("Method not found");
     }
         
+    private Object instanceController(String url) throws Exception {
+        Class c = findController(url);
+        Object o = c.newInstance();
+        return o;
+    }
+    
     private Class findController(String url) throws Exception {
         List<Class<?>> lc = getListClass();
         for (Class<?> c : lc) {

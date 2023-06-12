@@ -6,6 +6,7 @@ package etu2025.framework.util;
 
 import etu2025.framework.Mapping;
 import etu2025.framework.annotation.url;
+import jakarta.servlet.http.Part;
 import java.io.File;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
@@ -22,7 +23,7 @@ import java.util.List;
  * @author tiavi
  */
 public class Utils {
-    
+
     public static List<Class> getClassFrom(String packages) throws Exception {
         String path = packages.replaceAll("[.]", "/");
         URL packagesUrl = Thread.currentThread().getContextClassLoader().getResource(path);

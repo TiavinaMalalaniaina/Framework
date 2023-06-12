@@ -6,6 +6,7 @@ package etu2025.model;
 
 import etu2025.framework.ModelView;
 import etu2025.framework.annotation.url;
+import etu2025.framework.FileUpload;
 
 /**
  *
@@ -15,6 +16,7 @@ public class Emp {
     String firstname;
     String lastname;
     String[] loisir;
+    FileUpload myfiles;
     
     @url("/find-all.action")
     public ModelView findAll() {
@@ -76,6 +78,14 @@ public class Emp {
 
     public void setLastname(String lastname) {
         this.lastname = lastname;
+    }
+
+    public FileUpload getMyfiles() {
+        return myfiles;
+    }
+
+    public void setMyfiles(FileUpload myfiles) {
+        this.myfiles = myfiles;
     }
     
     

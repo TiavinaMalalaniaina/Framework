@@ -4,6 +4,7 @@
  */
 package etu2025.framework.servlet;
 
+import etu2025.framework.FileUpload;
 import etu2025.framework.Mapping;
 import etu2025.framework.ModelView;
 import etu2025.framework.annotation.url;
@@ -16,9 +17,11 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Part;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -73,10 +76,32 @@ public class FrontServlet extends HttpServlet {
             Method setter = (Method)entry.getValue();
             String[] parameter = parameters.get(key);
             Class<?>[] setter_parameter = setter.getParameterTypes();
-            Object setter_parameter_object = Utils.cast(parameter, setter_parameter[0]);
+            Object setter_parameter_object = null;
+            if (setter_parameter[0] == FileUpload.class) {
+                try {
+                    FileUpload fu = new FileUpload();
+                    Part filePart = getPart(request, key);
+                    fu.setName(FileUpload.getFileName(filePart));
+                    fu.setBytes(FileUpload.getBytesFromPart(filePart));
+                    setter_parameter_object = fu;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else {
+                setter_parameter_object = Utils.cast(parameter, setter_parameter[0]);
+            }
             setter.invoke(o, setter_parameter_object);
         }
-        
+    }
+    
+    private Part getPart(HttpServletRequest request, String key) throws IOException, ServletException, Exception {
+        Collection<Part> part_collection = request.getParts();
+        for (Part part : part_collection) {
+            if (part.getName().equals(key)) {
+                return part;
+            }
+        }
+        throw new Exception("¨Part don't exist");
     }
     
     private void dispatch(HttpServletRequest request, HttpServletResponse response, Object model_view) throws Exception {

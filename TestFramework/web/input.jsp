@@ -17,9 +17,10 @@
     </head>
     <body>
         <h1>Hello World!</h1>
-        <form action="save.action" method="get">
+        <form action="save.action" method="post" enctype="multipart/form-data">
             <input type="text" name="firstname" value="Tiavina">
             <input type="text" name="lastname" value="Malalaniaina">
+            <input type="file" name="myfiles">
             <input type="checkbox" name="loisir" value="foot">
             <input type="checkbox" name="loisir" value="basket">
             <input type="checkbox" name="loisir" value="volley">

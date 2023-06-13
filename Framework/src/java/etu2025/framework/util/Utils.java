@@ -5,6 +5,7 @@
 package etu2025.framework.util;
 
 import etu2025.framework.Mapping;
+import etu2025.framework.annotation.scope;
 import etu2025.framework.annotation.url;
 import jakarta.servlet.http.Part;
 import java.io.File;
@@ -24,6 +25,13 @@ import java.util.List;
  */
 public class Utils {
 
+    
+    
+    public static boolean isSingleton(Class<?> c) {
+        scope sc = c.getAnnotation(scope.class);
+        return sc != null && "singleton".equals(sc.value());
+    }
+    
     public static List<Class> getClassFrom(String packages) throws Exception {
         String path = packages.replaceAll("[.]", "/");
         URL packagesUrl = Thread.currentThread().getContextClassLoader().getResource(path);

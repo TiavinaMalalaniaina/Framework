@@ -8,6 +8,7 @@
 <%
     String first_name = String.valueOf(request.getAttribute("first_name"));    
     String last_name = String.valueOf(request.getAttribute("last_name"));
+    String[] loisir = (String[]) request.getAttribute("loisir");
 %>
 <!DOCTYPE html>
 <html>
@@ -20,6 +21,12 @@
         <ul>
             <li><%= first_name %></li>
             <li><%= last_name %></li>
+        </ul>
+        <h2>Loisir</h2>
+        <ul>
+            <% for (String i : loisir) { %>
+            <li><%= i %></li>
+            <% } %>
         </ul>
     </body>
 </html>

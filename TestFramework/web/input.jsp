@@ -5,10 +5,6 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%
-    String first_name = String.valueOf(request.getAttribute("first_name"));    
-    String last_name = String.valueOf(request.getAttribute("last_name"));
-%>
 <!DOCTYPE html>
 <html>
     <head>
@@ -24,6 +20,13 @@
             <input type="checkbox" name="loisir" value="foot">
             <input type="checkbox" name="loisir" value="basket">
             <input type="checkbox" name="loisir" value="volley">
+            <input type="submit" value="send">
+        </form>
+        <br>
+        <form action="saveS.action" method="post" enctype="multipart/form-data">
+            <input type="text" name="firstname" value="Tiavina">
+            <input type="text" name="lastname" value="Malalaniaina">
+            <input type="file" name="myfiles">
             <input type="submit" value="send">
         </form>
 

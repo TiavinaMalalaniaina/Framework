@@ -7,22 +7,23 @@ package etu2025.model;
 import etu2025.framework.ModelView;
 import etu2025.framework.annotation.url;
 import etu2025.framework.FileUpload;
+import etu2025.framework.annotation.scope;
 
 /**
  *
  * @author tiavi
  */
-public class Emp {
+@scope("singleton")
+public class EmpS {
     String firstname;
     String lastname;
-    String[] loisir;
     FileUpload myfiles;
 
-    public Emp() {
-        System.out.println("New Instance Emp");
+    public EmpS() {
+        System.out.println("New instance Emps");
     }
 
-    @url("/find-all.action")
+    @url("/find-allS.action")
     public ModelView findAll() {
         ModelView mv = new ModelView("list.jsp");
         mv.addItem("first_name", "John");
@@ -30,42 +31,28 @@ public class Emp {
         return mv;
     }
     
-    @url("/save.action")
+    @url("/saveS.action")
     public ModelView save() {
         ModelView mv = new ModelView("list.jsp");
         mv.addItem("first_name", getFirstname());
         mv.addItem("last_name", getLastname());
-        mv.addItem("loisir", getLoisir());
-        //System.out.println(getMyfiles().getName());
-        //System.out.println("--->appel:" + getAppel());
         return mv;
     }
     
-    @url("/parent.action")
+    @url("/parentS.action")
     public ModelView parent(String dadname, String momname) {
         ModelView mv = new ModelView("list.jsp");
         mv.addItem("first_name", dadname);
         mv.addItem("last_name", momname);
-        mv.addItem("loisir", getLoisir());
         return mv;
     }
     
     
     
-    @url("/input.action")
+    @url("/inputS.action")
     public ModelView input() {
         ModelView mv = new ModelView("input.jsp");
         return mv;
-    }
-    
-    
-
-    public String[] getLoisir() {
-        return loisir;
-    }
-
-    public void setLoisir(String[] loisir) {
-        this.loisir = loisir;
     }
     
     
@@ -93,6 +80,5 @@ public class Emp {
     public void setMyfiles(FileUpload myfiles) {
         this.myfiles = myfiles;
     }
-    
     
 }

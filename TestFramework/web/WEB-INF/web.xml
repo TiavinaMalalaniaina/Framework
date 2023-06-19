@@ -8,6 +8,14 @@
             <param-name>model-package</param-name>
             <param-value>etu2025.model</param-value>
         </init-param>
+        <init-param>
+            <param-name>session-name-isconnected</param-name>
+            <param-value>isconnected</param-value>
+        </init-param>
+        <init-param>
+            <param-name>session-name-profile</param-name>
+            <param-value>profile</param-value>
+        </init-param>
         <multipart-config>
             <max-file-size>5242880</max-file-size>
             <max-request-size>10485760</max-request-size>

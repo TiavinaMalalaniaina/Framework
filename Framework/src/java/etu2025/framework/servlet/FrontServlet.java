@@ -8,6 +8,7 @@ import etu2025.framework.FileUpload;
 import etu2025.framework.Mapping;
 import etu2025.framework.ModelView;
 import etu2025.framework.annotation.auth;
+import etu2025.framework.annotation.session;
 import etu2025.framework.annotation.url;
 import etu2025.framework.util.Utils;
 import jakarta.servlet.RequestDispatcher;
@@ -20,11 +21,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -84,7 +88,6 @@ public class FrontServlet extends HttpServlet {
             HttpSession session = request.getSession();
             String profile = (String) session.getAttribute(getProfile());
             boolean isConnected = (boolean) session.getAttribute(getIsConnected());
-            System.out.println(a.value() + "   <" + profile + ">  <" + getProfile() + ">  <" + getIsConnected());
             if (a.value().equals("")){
                 return isConnected;
             } else {
@@ -92,6 +95,26 @@ public class FrontServlet extends HttpServlet {
             }
         }
         return true;
+    }
+    
+    private void getAllSession(HttpServletRequest request, Object controller, Method method_controller) throws NoSuchMethodException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+        HttpSession session = request.getSession();
+        session s = method_controller.getAnnotation(session.class);
+        if (s != null) {
+            Enumeration<String> attributeNames = session.getAttributeNames();
+            Method method_session_get = controller.getClass().getDeclaredMethod("getSession", new Class[0]);
+            Method method_session_set = controller.getClass().getDeclaredMethod("setSession", HashMap.class);
+            HashMap<String, Object> session_controller = new HashMap<String, Object>();
+            while (attributeNames.hasMoreElements()) {
+                System.out.println("SESSION ADDED");
+                String attributeName = attributeNames.nextElement();
+                Object attributeValue = session.getAttribute(attributeName);
+                session_controller.put(attributeName, attributeValue);
+            }
+            method_session_set.invoke(controller, session_controller);
+            System.out.println(method_session_get.invoke(controller, new Object[0]));
+            System.out.println("INVOKED");
+        }
     }
     
     private void treatSession(HttpServletRequest request, ModelView mv) {
@@ -172,11 +195,11 @@ public class FrontServlet extends HttpServlet {
                 Class<?>[] setter_parameter = setter.getParameterTypes();
                 Object setter_parameter_object = null;
                 if (setter_parameter[0] == FileUpload.class) {
-                        FileUpload fu = new FileUpload();
-                        Part filePart = getPart(request, key);
-                        fu.setName(FileUpload.getFileName(filePart));
-                        fu.setBytes(FileUpload.getBytesFromPart(filePart));
-                        setter_parameter_object = fu;
+                    FileUpload fu = new FileUpload();
+                    Part filePart = getPart(request, key);
+                    fu.setName(FileUpload.getFileName(filePart));
+                    fu.setBytes(FileUpload.getBytesFromPart(filePart));
+                    setter_parameter_object = fu;
                 } else {
                     setter_parameter_object = Utils.cast(parameter, setter_parameter[0]);
                 }
@@ -273,6 +296,7 @@ public class FrontServlet extends HttpServlet {
             controller_parameters[i] = controller_parameter;
         }
         set(request,controller );
+        getAllSession(request, controller, controller_method);
         model_view = controller_method.invoke(controller, controller_parameters);
         return model_view;
     }

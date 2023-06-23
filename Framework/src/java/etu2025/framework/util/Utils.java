@@ -70,9 +70,14 @@ public class Utils {
         Method setter = c.getDeclaredMethod(setter_query, f.getType());
         return setter;
     }
+
     
     public static String getSetterQuery(Field f) {
         String field_name = f.getName();
+        return getSetterQuery(field_name);
+    }
+    
+    public static String getSetterQuery(String field_name) {
         String t1 = field_name.substring(0, 1);
         String t2 = field_name.substring(1);
         t1 = t1.toUpperCase();

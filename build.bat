@@ -5,8 +5,7 @@ mkdir src_jar
 mkdir class_jar
 
 for /r %fw_root%\ %%f in (*.java) do copy %%f .\src_jar
-javac -cp servlet-api.jar -parameters -d .\class_jar .\src_jar\*.java
-
+javac -Xlint -cp gson-2.8.2.jar;servlet-api.jar -parameters -d .\class_jar .\src_jar\*.java
 jar -cf fw.jar -C .\Framework\build\web\WEB-INF\classes\ etu2025
 ::copy fw.jar %project_lib%
 

@@ -4,6 +4,7 @@
  */
 package etu2025.framework.servlet;
 
+import com.google.gson.Gson;
 import etu2025.framework.FileUpload;
 import etu2025.framework.Mapping;
 import etu2025.framework.ModelView;
@@ -28,7 +29,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -69,15 +69,35 @@ public class FrontServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        try ( PrintWriter out = response.getWriter()) {
-            out.println("<h1>Servlet Frontservlet at " + request.getContextPath() + "</h1>");
-            out.println("<h1>URL at " + getURL(request) + "</h1>");
+        PrintWriter out = response.getWriter();
+        try {
             String url = getURL(request);
-            Class class_controller = findController(url);
+            Class<?> class_controller = findController(url);
             Object controller = treatSingleton(class_controller);
             Object model_view = executeController(request, url, controller);
-            dispatch(request, response, model_view);
+            if (model_view instanceof ModelView mv) {
+                System.out.println(mv.isJSON());
+                if (mv.isJSON()) {
+                    System.out.println("test");
+                    try {
+                        Gson gson = new Gson();
+                        System.out.println("test2");
+                        String json = gson.toJson(mv.getData());
+                        System.out.println("TOJSON");
+                        System.out.println(json);
+                        out.print(json);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    System.out.println("NOT JSON");
+                    dispatch(request, response, mv);
+                }
+            } else {
+                System.out.println("NOT MODELVIEW");
+            }
         } catch (Exception ex) {
+            ex.printStackTrace();
             Logger.getLogger(FrontServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -106,14 +126,12 @@ public class FrontServlet extends HttpServlet {
             Method method_session_set = controller.getClass().getDeclaredMethod("setSession", HashMap.class);
             HashMap<String, Object> session_controller = new HashMap<String, Object>();
             while (attributeNames.hasMoreElements()) {
-                System.out.println("SESSION ADDED");
                 String attributeName = attributeNames.nextElement();
                 Object attributeValue = session.getAttribute(attributeName);
                 session_controller.put(attributeName, attributeValue);
             }
             method_session_set.invoke(controller, session_controller);
             System.out.println(method_session_get.invoke(controller, new Object[0]));
-            System.out.println("INVOKED");
         }
     }
     
@@ -219,27 +237,19 @@ public class FrontServlet extends HttpServlet {
         throw new Exception("¨Part don't exist");
     }
     
-    private void dispatch(HttpServletRequest request, HttpServletResponse response, Object model_view) throws Exception {
-        if (model_view instanceof ModelView modelView) {
-            try {
-                dispatch(request, response, modelView);
-                return;
-            } catch (ServletException | IOException e) {
-                throw e;
+    private void dispatch(HttpServletRequest request, HttpServletResponse response, ModelView model_view) throws Exception {
+        try {
+            RequestDispatcher dispatcher = request.getRequestDispatcher(model_view.getView());
+            treatSession(request, model_view);
+            for (Map.Entry<String, Object> entry : model_view.getData().entrySet()) {
+                String key = String.valueOf(entry.getKey());
+                Object val = entry.getValue();
+                request.setAttribute(key, val);
             }
+            dispatcher.forward(request, response);
+        } catch (ServletException | IOException e) {
+            throw e;
         }
-        throw new Exception("The controller's method must return a ModelView");
-    }
-    
-    private void dispatch(HttpServletRequest request, HttpServletResponse response, ModelView model_view) throws ServletException, IOException {
-        RequestDispatcher dispatcher = request.getRequestDispatcher(model_view.getView());
-        treatSession(request, model_view);
-        for (Map.Entry<String, Object> entry : model_view.getData().entrySet()) {
-            String key = String.valueOf(entry.getKey());
-            Object val = entry.getValue();
-            request.setAttribute(key, val);
-        }
-        dispatcher.forward(request, response);
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

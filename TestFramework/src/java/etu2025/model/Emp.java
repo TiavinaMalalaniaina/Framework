@@ -72,6 +72,15 @@ public class Emp {
         return mv;
     }
     
+    @url("/json.action")
+    public ModelView testJSON() {
+        ModelView mv = new ModelView();
+        mv.activeJSON();
+        mv.addItem("name", "Tiavina");
+        mv.addItem("last_name", "Malalaniaina");
+        return mv;
+    }
+    
     @url("/login.action")
     public ModelView logIn() {
         String username = getUsername();

@@ -9,6 +9,7 @@ import etu2025.framework.FileUpload;
 import etu2025.framework.Mapping;
 import etu2025.framework.ModelView;
 import etu2025.framework.annotation.auth;
+import etu2025.framework.annotation.restAPI;
 import etu2025.framework.annotation.session;
 import etu2025.framework.annotation.url;
 import etu2025.framework.util.Utils;
@@ -74,30 +75,28 @@ public class FrontServlet extends HttpServlet {
             String url = getURL(request);
             Class<?> class_controller = findController(url);
             Object controller = treatSingleton(class_controller);
+            Class<?> controller_class = findController(url);
+            Method controller_method = findMethodController(controller_class, url);
+            restAPI rest = controller_method.getAnnotation(restAPI.class);
             Object model_view = executeController(request, url, controller);
-            if (model_view instanceof ModelView mv) {
-                System.out.println(mv.isJSON());
-                if (mv.isJSON()) {
-                    System.out.println("test");
-                    try {
+            if (rest != null) {
+                 Gson gson = new Gson();
+                String json = gson.toJson(model_view);
+                out.print(json);
+            } else {
+                if (model_view instanceof ModelView mv) {
+                    if (mv.isJSON()) {
                         Gson gson = new Gson();
-                        System.out.println("test2");
                         String json = gson.toJson(mv.getData());
-                        System.out.println("TOJSON");
-                        System.out.println(json);
                         out.print(json);
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                    } else {
+                        dispatch(request, response, mv);
                     }
                 } else {
-                    System.out.println("NOT JSON");
-                    dispatch(request, response, mv);
+                    throw new Exception("La variable de retour n'est pas reconnue");
                 }
-            } else {
-                System.out.println("NOT MODELVIEW");
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
             Logger.getLogger(FrontServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

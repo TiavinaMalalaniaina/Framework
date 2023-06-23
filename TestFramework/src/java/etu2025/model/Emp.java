@@ -8,12 +8,16 @@ import etu2025.framework.ModelView;
 import etu2025.framework.annotation.url;
 import etu2025.framework.FileUpload;
 import etu2025.framework.annotation.auth;
+import etu2025.framework.annotation.session;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
  * @author tiavi
  */
 public class Emp {
+    HashMap<String, Object> session = new HashMap<>();
     String firstname;
     String lastname;
     String[] loisir;
@@ -56,6 +60,15 @@ public class Emp {
     @url("/log.action")
     public ModelView logInput() {
         ModelView mv = new ModelView("log.jsp");
+        return mv;
+    }
+    
+    @session
+    @url("/session.action")
+    public ModelView testSession(String key, Object value) {
+        ModelView mv = new ModelView("session.jsp");
+        mv.addSession(key, value);
+        System.out.println("SESSION->"+getSession());
         return mv;
     }
     
@@ -138,6 +151,16 @@ public class Emp {
     public void setMdp(String mdp) {
         this.mdp = mdp;
     }
+
+    public HashMap<String, Object> getSession() {
+        return session;
+    }
+
+    public void setSession(HashMap<String, Object> session) {
+        this.session = session;
+    }
+    
+    
     
     
 }

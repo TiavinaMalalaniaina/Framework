@@ -8,6 +8,7 @@ import etu2025.framework.ModelView;
 import etu2025.framework.annotation.url;
 import etu2025.framework.FileUpload;
 import etu2025.framework.annotation.auth;
+import etu2025.framework.annotation.restAPI;
 import etu2025.framework.annotation.session;
 import java.util.HashMap;
 import java.util.Map;
@@ -79,6 +80,12 @@ public class Emp {
         mv.addItem("name", "Tiavina");
         mv.addItem("last_name", "Malalaniaina");
         return mv;
+    }
+    
+    @restAPI
+    @url("/apirest.action")
+    public Object apiRest() {
+        return this;
     }
     
     @url("/login.action")

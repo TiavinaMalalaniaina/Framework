@@ -5,6 +5,7 @@
 package etu2025.framework;
 
 import java.util.HashMap;
+import java.util.ArrayList;
 
 /**
  *
@@ -16,6 +17,7 @@ public class ModelView {
     private HashMap<String, Object> session = new HashMap<>();
     private boolean JSON = false;
     private boolean invalidateSession = false;
+    private ArrayList<String> removingSession = new ArrayList<>();
 
     public void addSession(String key, Object value) {
         getSession().put(key, value);
@@ -74,5 +76,17 @@ public class ModelView {
     
     public void invalidateSession(boolean value) {
         this.invalidateSession = value;
+    }
+    
+    public ArrayList<String> getRemovingSession() {
+        return this.removingSession;
+    }
+    
+    public void setRemovingSession(ArrayList<String> value) {
+        this.removingSession = value;
+    }
+    
+    public void addRemovingSession(String session_name) {
+        this.removingSession.add(session_name);
     }
 }

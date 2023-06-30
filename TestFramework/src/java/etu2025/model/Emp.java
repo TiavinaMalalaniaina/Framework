@@ -30,6 +30,15 @@ public class Emp {
         System.out.println("New Instance Emp");
     }
     
+    @session
+    @url("/removing-session.action")
+    public ModelView removeSession(String key) {
+        ModelView mv = new ModelView("session.jsp");
+        mv.addRemovingSession("test-session");
+        System.out.println("SESSION->"+getSession());
+        return mv;
+    }
+    
     @auth
     @url("/find-all.action")
     public ModelView findAll() {
@@ -61,6 +70,13 @@ public class Emp {
     @url("/log.action")
     public ModelView logInput() {
         ModelView mv = new ModelView("log.jsp");
+        return mv;
+    }
+    
+    @url("/log-out.action")
+    public ModelView logOut() {
+        ModelView mv = new ModelView("log-out.jsp");
+        mv.invalidateSession(true);
         return mv;
     }
     

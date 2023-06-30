@@ -85,8 +85,11 @@ public class FrontServlet extends HttpServlet {
                 out.print(json);
             } else {
                 if (model_view instanceof ModelView mv) {
+                    HttpSession session = request.getSession();
+                    for (String session_name : mv.getRemovingSession()) {
+                        session.removeAttribute(session_name);
+                    }
                     if (mv.getInvalidateSession() == true) {
-                        HttpSession session = request.getSession();
                         session.invalidate();
                     }
                     if (mv.isJSON()) {

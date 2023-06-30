@@ -15,6 +15,7 @@ public class ModelView {
     private HashMap<String, Object> data = new HashMap<>();
     private HashMap<String, Object> session = new HashMap<>();
     private boolean JSON = false;
+    private boolean invalidateSession = false;
 
     public void addSession(String key, Object value) {
         getSession().put(key, value);
@@ -67,4 +68,11 @@ public class ModelView {
         setJSON(true);
     }
     
+    public boolean getInvalidateSession() {
+        return this.invalidateSession;
+    }
+    
+    public void invalidateSession(boolean value) {
+        this.invalidateSession = value;
+    }
 }

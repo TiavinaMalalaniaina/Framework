@@ -85,6 +85,10 @@ public class FrontServlet extends HttpServlet {
                 out.print(json);
             } else {
                 if (model_view instanceof ModelView mv) {
+                    if (mv.getInvalidateSession() == true) {
+                        HttpSession session = request.getSession();
+                        session.invalidate();
+                    }
                     if (mv.isJSON()) {
                         Gson gson = new Gson();
                         String json = gson.toJson(mv.getData());

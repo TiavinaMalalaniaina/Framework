@@ -64,6 +64,13 @@ public class Emp {
         return mv;
     }
     
+    @url("/log-out.action")
+    public ModelView logOut() {
+        ModelView mv = new ModelView("log-out.jsp");
+        mv.invalidateSession(true);
+        return mv;
+    }
+    
     @session
     @url("/session.action")
     public ModelView testSession(String key, Object value) {
